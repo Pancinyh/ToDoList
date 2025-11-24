@@ -1,16 +1,66 @@
 from pathlib import Path
-
-ARQUIVO = Path("lista.txt")
-
-# cria o arquivo se não existir
-if not ARQUIVO.exists():
-    ARQUIVO.write_text("", encoding="utf-8")
-# carrega o arquivo para ser usado no código
-with open(ARQUIVO, "r", encoding="utf-8") as arquivo:
-        Tarefas = [linha.strip() for linha in arquivo if linha.strip()]
 from time import sleep
 
-
+cadastros = []
+try:
+    with open('cadastros.txt', 'r') as cadastro:
+        for linha in cadastro:
+            cadastros.append(linha.strip())
+except FileNotFoundError:
+    cadastros = []
+# Login
+opcao = int(input('[1] Logar\n[2] Cadastrar\nR: '))
+if opcao == 1:
+    c = 0
+    logado = False
+    while logado == False:
+        c+=1
+        email = str(input("Email: ")).strip()
+        senha = str(input("Senha: ")).strip()
+        for cad in cadastros:
+            if email in cad and senha in cad:
+                print('LOGADO COM SUCESSO!')
+                sleep(2)
+                logado = True
+                break
+            else:
+                print('EMAIL OU SENHA INCORRETOS!')
+                sleep(2)
+            if c == 3:
+                print('LIMITE DE 3 TENTATIVAS ALCANÇADO!')
+                sleep(2)
+                exit()
+# Cadastro
+cadastrado = False
+while cadastrado == False:
+    if opcao == 2:
+        nome = str(input('Nome: '))
+        email = str(input('Email: ')).strip()
+        senha = str(input('Senha: ')).strip()
+        for c in cadastros:
+            if email not in c:
+                dados = (nome, email, senha)
+                cadastros.append(dados)
+                with open('cadastros.txt', 'a') as cadastro:
+                    for linha in cadastros:
+                        cadastro.write(f'{linha}\n')
+                print('\033[1;32mCADASTRADO COM SUCESSO!\033[m')
+                sleep(2)
+                cadastrado = True
+                break
+        else:
+            print('\033[1;31mEMAIL JÁ CADASTARDO!\033[m')
+            sleep(2)
+#Formatação email
+email.replace('@', "_").replace(".", "_")
+ARQUIVO = f'{email}.txt'
+# carrega o arquivo para ser usado no código
+try:
+    with open(ARQUIVO, "r", encoding="utf-8") as arquivo:
+        Tarefas = [linha.strip() for linha in arquivo if linha.strip()]
+except FileNotFoundError:
+    with open(ARQUIVO, "x", encoding="utf-8") as arquivo:
+        Tarefas = []
 print('\033[1;35m-_\033[m'* 10)
 print('\033[1;36mTo Do List\033[m')
 print('\033[1;35m-_\033[m'* 10)
@@ -49,8 +99,8 @@ while escolha != 0:
     except ValueError:
         print('\033[1;31mErro:\033[m Tente novamente.')
     sleep(2)
-# adiciona o que estiver dentro dele no documento 'lista.txt'
-with open('lista.txt', 'w', encoding='utf-8') as arquivo:
+# adiciona o que estiver dentro dele no documento.
+with open(ARQUIVO, 'w', encoding='utf-8') as arquivo:
 # adiciona os elementos da lista um em cada linha
     for t in Tarefas:
         arquivo.write(f'{t}\n')
