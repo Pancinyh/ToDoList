@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from time import sleep
 
@@ -5,7 +6,7 @@ cadastros = []
 try:
     with open('cadastros.txt', 'r') as cadastro:
         for linha in cadastro:
-            cadastros.append(linha.strip())
+            cadastros.append(ast.literal_eval(linha.strip()))
 except FileNotFoundError:
     cadastros = []
 # Login
@@ -17,14 +18,14 @@ if opcao == 1:
         c+=1
         email = str(input("Email: ")).strip()
         senha = str(input("Senha: ")).strip()
-        for cad in cadastros:
-            if email in cad and senha in cad:
-                print('LOGADO COM SUCESSO!')
+        for nome_user, email_user, senha_user in cadastros:
+            if email == email_user and senha == senha_user:
+                print('\033[1;32mLOGADO COM SUCESSO!\033[m')
                 sleep(2)
                 logado = True
                 break
             else:
-                print('EMAIL OU SENHA INCORRETOS!')
+                print('\033[1;31mEMAIL OU SENHA INCORRETOS!\033[m')
                 sleep(2)
             if c == 3:
                 print('LIMITE DE 3 TENTATIVAS ALCANÇADO!')
@@ -32,25 +33,36 @@ if opcao == 1:
                 exit()
 # Cadastro
 cadastrado = False
-while cadastrado == False:
-    if opcao == 2:
-        nome = str(input('Nome: '))
-        email = str(input('Email: ')).strip()
-        senha = str(input('Senha: ')).strip()
-        for c in cadastros:
-            if email not in c:
+if opcao == 2:
+        while True:
+            while True:
+                nome = str(input('Nome completo: ')).strip().title()
+                if len(nome.split()) > 2:
+                    break
+                print('\033[1;37mDeve conter seu nome completo.\033[m')
+            email = str(input('Email: ')).strip()
+            senha = str(input('Senha: ')).strip()
+            c = 0
+            for nome_u, email_u, senha_u in cadastros:
+                if email == email_u:
+                    c += 1
+            if c == 0:
                 dados = (nome, email, senha)
                 cadastros.append(dados)
-                with open('cadastros.txt', 'a') as cadastro:
+                with open('cadastros.txt', 'w') as cadastro:
                     for linha in cadastros:
-                        cadastro.write(f'{linha}\n')
+                        cadastro.write(str(linha) + '\n')
                 print('\033[1;32mCADASTRADO COM SUCESSO!\033[m')
                 sleep(2)
-                cadastrado = True
                 break
-        else:
-            print('\033[1;31mEMAIL JÁ CADASTARDO!\033[m')
-            sleep(2)
+            else:
+                print('\033[1;31mEMAIL JÁ CADASTARDO!\033[m')
+                sleep(2)
+if opcao == 3:
+    email = str(input('Email do cadastro: ')).strip()
+    nova_senha = str(input('Nova senha: ')).strip()
+    #for pos, linha in enumerate(cadastros):
+      #  if email in cadastros[linha]
 #Formatação email
 email.replace('@', "_").replace(".", "_")
 ARQUIVO = f'{email}.txt'
