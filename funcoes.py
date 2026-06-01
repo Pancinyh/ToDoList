@@ -32,5 +32,5 @@ def menu(*opcoes):
 
 def salvar(arq, lista_tarefas):
     with open(arq, 'w', encoding='utf-8') as arquivo:
-        for t in lista_tarefas:
-            arquivo.write(f'{t}\n')
+        tarefas = lista_tarefas.to_dict()
+        json.dump(tarefas, arquivo)
